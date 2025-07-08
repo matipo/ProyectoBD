@@ -1,32 +1,36 @@
-from typing import Optional, List
-from datetime import date
+from typing import Optional
+from datetime import datetime
 from sqlalchemy.orm import Session
-from app.models import Jugador
+from ..models import Usuario
 
-def create_jugador(session: Session, *, pais: str, fecha_nacimiento: date,
-                   genero: str, ciudad: str,
-                   asociacion_id: Optional[int] = None) -> Jugador:
-    j = Jugador(pais=pais, fecha_nacimiento=fecha_nacimiento,
-                genero=genero, ciudad=ciudad,
-                asociaciones=asociacion_id)
-    session.add(j); session.commit(); session.refresh(j); return j
 
-def get_jugador(session: Session, jugador_id: int) -> Optional[Jugador]:
-    return session.get(Jugador, jugador_id)
+def create_participante(session: Session, nombre: str, email: str, telefono: str, ciudad: str, fecha_inscripcion: Optional[datetime] = None):
+  if fecha_inscripcion is None:
+    fecha_inscripcion = datetime.now()
+  usuario = Usuario(nombre=nombre, email=email, fecha_inscripcion=fecha_inscripcion, telefono=telefono, ciudad=ciudad)
+  session.add(usuario)
+  session.commit()
+  session.refresh(usuario)
+  return usuario
 
-def get_jugadores(session: Session) -> List[Jugador]:
-    return session.query(Jugador).all()
+def get_participante(session: Session, id: int):
+  return session.query(Usuario).filter(Usuario.id == id).first()
 
-def update_jugador(session: Session, jugador_id: int, *, pais: str,
-                   fecha_nacimiento: date, genero: str, ciudad: str,
-                   asociacion_id: Optional[int] = None) -> Optional[Jugador]:
-    j = session.get(Jugador, jugador_id); 
-    if not j: return None
-    j.pais = pais; j.fecha_nacimiento = fecha_nacimiento
-    j.genero = genero; j.ciudad = ciudad; j.asociaciones = asociacion_id
-    session.commit(); session.refresh(j); return j
+def get_participantes(session: Session):
+  return session.query(Usuario).all()
 
-def delete_jugador(session: Session, jugador_id: int) -> Optional[Jugador]:
-    j = session.get(Jugador, jugador_id)
-    if not j: return None
-    session.delete(j); session.commit(); return j
+def actualizar_participante(session: Session, id: int, nombre: str, email: str, telefono: str, ciudad: str):
+  usuario = session.query(Usuario).filter(Usuario.id == id).first()
+  usuario.nombre = nombre
+  usuario.email = email
+  usuario.telefono = telefono
+  usuario.ciudad = ciudad
+  session.commit()
+  session.refresh(usuario)
+  return usuario
+
+def eliminar_participante(session: Session, id: int):
+  usuario = session.query(Usuario).filter(Usuario.id == id).first()
+  session.delete(usuario)
+  session.commit()
+  return usuario
