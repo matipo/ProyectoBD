@@ -2,8 +2,9 @@ from typing import Optional
 from datetime import datetime
 from sqlalchemy.orm import Session
 from ..models import Torneo
+from .mesa import crear_mesa
 
-def crear_torneo(sesion, nombre, fechas_inscripcion, fecha_competencia, mesas, fecha_creacion: Optional[datetime] = None):
+def crear_torneo(session, nombre, fechas_inscripcion, fecha_competencia, mesas_disponibles,mesas: Optional[int]= None, fecha_creacion: Optional[datetime] = None):
     if fecha_creacion is None:
         fecha_creacion = datetime.now()
         fecha_creacion = fecha_creacion
@@ -11,29 +12,38 @@ def crear_torneo(sesion, nombre, fechas_inscripcion, fecha_competencia, mesas, f
     nombre=nombre,
     fechas_inscripcion=fechas_inscripcion,
     fecha_competencia=fecha_competencia,
+    mesas_disponibles=mesas_disponibles,
     mesas=mesas
     )
-    sesion.add(torneo)
-    sesion.commit()
+    session.add(torneo)
+    session.commit()
+    session.refresh(torneo)
+    if mesas_disponibles !=None:
+        for i in range(mesas_disponibles):
+            crear_mesa(session, i+1,4,torneo.id,datetime.now(),)
+    else:
+        print("No se ejecuto", mesas_disponibles, print(torneo.id))
+    
     return torneo
 
-def obtener_torneo(sesion, id):
-    return sesion.query(Torneo).filter(Torneo.id == id).first()   
 
-def obtener_torneos(sesion):
-    return sesion.query(Torneo).all()
+def obtener_torneo(session, id):
+    return session.query(Torneo).filter(Torneo.id == id).first()   
 
-def actualizar_torneo(sesion, id, nombre, fechas_inscripcion, fecha_competencia, mesas):
-    torneo = sesion.query(Torneo).filter(Torneo.id == id).first()
+def obtener_torneos(session):
+    return session.query(Torneo).all()
+
+def actualizar_torneo(session, id, nombre, fechas_inscripcion, fecha_competencia, mesas_disponibles):
+    torneo = session.query(Torneo).filter(Torneo.id == id).first()
     torneo.nombre = nombre
     torneo.fechas_inscripcion = fechas_inscripcion
     torneo.fecha_competencia = fecha_competencia
-    torneo.mesas = mesas
-    sesion.commit()
+    torneo.mesas_disponibles = mesas_disponibles
+    session.commit()
     return torneo
 
-def eliminar_torneo(sesion, id):
-    torneo = sesion.query(Torneo).filter(Torneo.id == id).first()
-    sesion.delete(torneo)
-    sesion.commit()
+def eliminar_torneo(session, id):
+    torneo = session.query(Torneo).filter(Torneo.id == id).first()
+    session.delete(torneo)
+    session.commit()
     return torneo

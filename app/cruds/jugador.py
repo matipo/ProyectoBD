@@ -3,7 +3,7 @@ from datetime import datetime
 from sqlalchemy.orm import Session
 from ..models import Jugador
 
-def crear_jugador(session: Session, nombre: str,pais:str , telefono: str,genero: str, ciudad: str,fecha_nacimiento: datetime ,fecha_inscripcion: Optional[datetime] = None):
+def crear_jugador(session: Session, nombre: str,pais:str , telefono: str,genero: str, ciudad: str,fecha_nacimiento: datetime ,fecha_inscripcion: Optional[datetime] = None,asociaciones: Optional[int] = None):
     if fecha_inscripcion is None:
         fecha_inscripcion = datetime.now()
     jugador = Jugador(
@@ -13,10 +13,12 @@ def crear_jugador(session: Session, nombre: str,pais:str , telefono: str,genero:
         genero = genero,
         ciudad=ciudad,
         fecha_nacimiento = fecha_nacimiento,
-        fecha_inscripcion=fecha_inscripcion  
+        fecha_inscripcion=fecha_inscripcion,
+        asociaciones=asociaciones
     )
     session.add(jugador)
     session.commit()
+    session.refresh(jugador)
     return jugador
 
 def obtener_jugador(session: Session, id: int):

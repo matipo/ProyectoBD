@@ -17,11 +17,15 @@ def get_mesas(session: Session = Depends(get_db)):
 
 @router.get("/torneo/{torneo_id}")
 def get_mesas_torneo(torneo_id: int, session: Session = Depends(get_db)):
+    
+
     return obtener_mesas_torneo(session, torneo_id)
 
 @router.post("/")
-def create_mesa(numero: int, capacidad: int, session: Session = Depends(get_db)):
-    return crear_mesa(session, numero, capacidad)
+def create_mesa(numero: int, capacidad: int,torneo,  session: Session = Depends(get_db)):
+    mesa = crear_mesa(session, numero, capacidad,torneo=torneo )
+    
+    return mesa
 
 @router.put("/{mesa_id}")
 def update_mesa(mesa_id: int, numero: int, capacidad: int, session: Session = Depends(get_db)):

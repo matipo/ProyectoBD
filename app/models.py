@@ -72,8 +72,7 @@ class Jugador(Base):
     fecha_nacimiento= Column(Date,  nullable=False)
     genero          = Column(Text,  nullable=False)
     ciudad          = Column(Text,  nullable=False)
-    asociaciones    = Column(Integer, ForeignKey("asociaciones.id",
-                                                 ondelete="SET NULL"))
+    asociaciones    = Column(Integer, ForeignKey("asociaciones.id",ondelete="SET NULL"))
     nombre          = Column(Text, nullable=False)
     telefono        = Column(Text, nullable=False)
     fecha_inscripcion = Column(Text, nullable=False)
@@ -173,9 +172,8 @@ class Mesa(Base):
     __tablename__ = "mesas"
 
     id       = Column(Integer, primary_key=True)
-    partidos = Column(Integer, ForeignKey("partidos.id",
-                                          ondelete="CASCADE"),
-                      nullable=False)
+    partidos = Column(Integer, ForeignKey("partidos.id",ondelete="CASCADE"),nullable=False)
+    torneo = Column(Integer, ForeignKey("torneo.id",ondelete="CASCADE"),nullable=True)
 
     partido = relationship("Partido", back_populates="mesa")
     torneos = relationship("Torneo", back_populates="mesa")
@@ -208,9 +206,9 @@ class Torneo(Base):
     nombre            = Column(Text, nullable=False)
     fechas_inscripcion= Column(Date, nullable=False)
     fecha_competencia = Column(Date, nullable=False)
-    mesas             = Column(Integer, ForeignKey("mesas.id",
-                                                   ondelete="CASCADE"),
-                               nullable=False)
+    mesas_disponibles = Column(Integer, nullable=False)
+    #sacar dps
+    mesas             = Column(Integer, ForeignKey("mesas.id",ondelete="CASCADE"),nullable=True)
 
     mesa       = relationship("Mesa",    back_populates="torneos")
     fases      = relationship("Fase",    back_populates="torneo")
@@ -220,7 +218,6 @@ class Torneo(Base):
                                  back_populates="torneo")
 
 Index("idx_torneos__mesas", Torneo.mesas)
-
 
 class CategoriaTorneo(Base):
     __tablename__ = "categorias_torneos"

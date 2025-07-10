@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException,Body
 from typing import Optional
 from datetime import datetime
 from sqlalchemy.orm import Session
@@ -25,8 +25,11 @@ def get_jugador_endpoint(jugador_id: int, session: Session = Depends(get_db)):
     return jugador
 
 @router.post("/")
-def create_jugador_endpoint(nombre: str,pais:str , telefono: str,genero: str, ciudad: str,fecha_nacimiento: datetime,session: Session = Depends(get_db)):
-    return crear_jugador(session, nombre, pais,telefono, genero,ciudad,fecha_nacimiento)
+def create_jugador_endpoint(nombre: str,pais:str , telefono: str,genero: str, ciudad: str,fecha_nacimiento: datetime,asociaciones: Optional[int]=None,session: Session = Depends(get_db)):
+    
+    jugador = crear_jugador(session, nombre, pais, telefono, genero, ciudad, fecha_nacimiento,asociaciones=asociaciones)
+    
+    return jugador
 
 @router.put("/{jugador_id}")
 def update_jugador_endpoint(jugador_id: int, nombre: str,pais:str, telefono: str, ciudad: str, session: Session = Depends(get_db)):

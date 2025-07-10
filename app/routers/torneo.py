@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from datetime import date
+from typing import Optional
 from ..db import get_db
 from ..cruds.torneo import (
     crear_torneo,
@@ -28,7 +29,8 @@ def create_torneo(
     nombre: str,
     fechas_inscripcion: date,
     fecha_competencia: date,
-    mesas: int,
+    mesas_disponibles: int,
+    mesas: Optional[int]= None,
     session: Session = Depends(get_db),
 ):
     return crear_torneo(
@@ -36,6 +38,7 @@ def create_torneo(
         nombre,
         fechas_inscripcion,
         fecha_competencia,
+        mesas_disponibles,
         mesas
     )
 
@@ -45,7 +48,7 @@ def update_torneo(
     nombre: str,
     fechas_inscripcion: date,
     fecha_competencia: date,
-    mesas: int,
+    mesas_disponibles: int,
     session: Session = Depends(get_db),
 ):
     torneo = actualizar_torneo(
@@ -54,7 +57,7 @@ def update_torneo(
         nombre,
         fechas_inscripcion,
         fecha_competencia,
-        mesas
+        mesas_disponibles
     )
     if not torneo:
         raise HTTPException(status_code=404, detail="Torneo no encontrado")
