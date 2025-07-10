@@ -2,8 +2,8 @@
 # Edit at https://www.toptal.com/developers/gitignore?templates=linux,vim,python
 
 # Sample.dev
-sample.env/
-sample.env
+#sample.env/
+#sample.env
 
 
 
