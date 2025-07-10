@@ -6,9 +6,11 @@ class Asociacion(Base):
     __tablename__ = "asociaciones"
 
     id     = Column(Integer, primary_key=True)
+    nombre = Column(Text, nullable=False)
     ciudad = Column(Text, nullable=False)
     pais   = Column(Text, nullable=False)
-
+    fecha_inscripcion = Column(Date)
+    
     # Relacion uno‑a‑muchos
     jugadores = relationship("Jugador", back_populates="asociacion")
 
@@ -72,6 +74,9 @@ class Jugador(Base):
     ciudad          = Column(Text,  nullable=False)
     asociaciones    = Column(Integer, ForeignKey("asociaciones.id",
                                                  ondelete="SET NULL"))
+    nombre          = Column(Text, nullable=False)
+    telefono        = Column(Text, nullable=False)
+    fecha_inscripcion = Column(Text, nullable=False)
 
     asociacion = relationship("Asociacion", back_populates="jugadores")
 

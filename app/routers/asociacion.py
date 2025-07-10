@@ -23,12 +23,12 @@ def get_asociacion(asociacion_id: int, session: Session = Depends(get_db)):
     return asociacion
 
 @router.post("/")
-def create_asociacion(nombre: str, ciudad: str, session: Session = Depends(get_db)):
-    return crear_asociacion(session, nombre, ciudad)
+def create_asociacion(nombre: str, ciudad: str,pais:str, session: Session = Depends(get_db)):
+    return crear_asociacion(session, nombre, ciudad, pais)
 
 @router.put("/{asociacion_id}")
-def update_asociacion(asociacion_id: int, nombre: str, ciudad: str, session: Session = Depends(get_db)):
-    return actualizar_asociacion(session, asociacion_id, nombre, ciudad)
+def update_asociacion(asociacion_id: int, nombre: str, ciudad: str,pais:str , session: Session = Depends(get_db)):
+    return actualizar_asociacion(session, asociacion_id, nombre, ciudad,pais)
 
 @router.delete("/{asociacion_id}")
 def delete_asociacion(asociacion_id: int, session: Session = Depends(get_db)):
