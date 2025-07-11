@@ -33,6 +33,7 @@ def actualizar_categoria(session, id, nombre, genero, sets_por_partido, puntos_p
     categoria.edad_min = edad_min
     categoria.edad_max = edad_max
     session.commit()
+    session.refresh(categoria)
     return categoria
 
 def eliminar_categoria(session, id):
