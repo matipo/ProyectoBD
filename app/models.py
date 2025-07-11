@@ -279,20 +279,13 @@ Index("idx_categorias_fases", CategoriaFase.fases)
 class Inscripcion(Base):
     __tablename__ = "inscripciones"
 
-    id         = Column(Integer, nullable=False)
-    categorias = Column(Integer, ForeignKey("categorias.id",
-                                            ondelete="CASCADE"),
-                        nullable=False)
-    torneos    = Column(Integer, ForeignKey("torneos.id",
-                                            ondelete="CASCADE"),
-                        nullable=False)
-    jugador = Column(Integer, ForeignKey("jugador.id",
-                                         ondelete="SET NULL"))
-    equipo  = Column(Integer, ForeignKey("equipo.id",
-                                         ondelete="SET NULL"))
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    categorias = Column(Integer, ForeignKey("categorias.id", ondelete="CASCADE"), nullable=False)
+    torneos    = Column(Integer, ForeignKey("torneos.id", ondelete="CASCADE"), nullable=False)
+    jugador = Column(Integer, ForeignKey("jugador.id", ondelete="CASCADE"), nullable=False)
+    equipo  = Column(Integer, ForeignKey("equipo.id", ondelete="CASCADE"), nullable=False)
 
     __table_args__ = (
-        PrimaryKeyConstraint("id", "categorias"),
         Index("idx_inscripciones__categorias", "categorias"),
         Index("idx_inscripciones__torneos",    "torneos"),
         Index("idx_inscripciones__jugador",    "jugador"),
