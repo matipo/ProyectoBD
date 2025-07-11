@@ -24,8 +24,8 @@ def get_inscripciones(session: Session = Depends(get_db)):
 
 
 @router.post("/")
-def create_inscripcion(id: int, categoria_id: int, torneo_id: int, jugador_id: int, equipo_id: int, session: Session = Depends(get_db)):
-    return crear_inscripcion(session, id, categoria_id, torneo_id, jugador_id, equipo_id)
+def create_inscripcion(categoria_id: int, torneo_id: int, jugador_id: int, equipo_id: int, session: Session = Depends(get_db)):
+    return crear_inscripcion(session, categoria_id, torneo_id, jugador_id, equipo_id)
 
 @router.put("/{inscripcion_id}/{categoria_id}")
 def update_inscripcion(inscripcion_id: int, categoria_id: int, jugador_id: int, equipo_id: int, session: Session = Depends(get_db)):
