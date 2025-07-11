@@ -39,6 +39,7 @@ pip install -r requirements.txt
 
 4. **Crea y aplica migraciones**
 
+Crea la carpeta `versions` dentro de `migrations/`. Luego ejecuta lo siguiente:
 ```bash
 alembic revision --autogenerate -m "primer modelo"
 alembic upgrade head
