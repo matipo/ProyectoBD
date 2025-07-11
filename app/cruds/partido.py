@@ -2,10 +2,12 @@ from typing import Optional
 from datetime import datetime
 from sqlalchemy.orm import Session
 from ..models import Partido
+from . mesa import Mesa
 
-def crear_partido(sesion: Session, mesa: int, es_bye: bool, fase: int, categoria: int, tipo: str, jugador1: int, jugador2: int, fecha_creacion: Optional[datetime] = None ):
-    if fecha_creacion is None:
-        fecha_creacion = datetime.now()
+def crear_partido(session, es_bye, fase, categoria, tipo, jugador1, jugador2, horario: datetime = None):
+    if horario is None:
+        horario = datetime.now()
+
     if tipo not in ['individual', 'dobles']:
         raise ValueError('El tipo de partido debe ser individual o dobles')
     if fase not in ['grupos', 'octavos', 'cuartos', 'semifinal', 'final']:
@@ -13,40 +15,42 @@ def crear_partido(sesion: Session, mesa: int, es_bye: bool, fase: int, categoria
     if es_bye and jugador2 is not None:
         raise ValueError('Si es un bye, no puede haber jugador2')
 
+    # 🔎 Buscar mesa libre para el horario
+    mesa_ocupada_ids = [p.mesa_id for p in session.query(Partido).filter(Partido.horario == horario).all()]
+    mesa_libre = session.query(Mesa).filter(~Mesa.id.in_(mesa_ocupada_ids)).first()
 
-    mesa_ocupada = sesion.query(Partido).filter(Partido.mesa == mesa, Partido.fecha_creacion == fecha_creacion).first()
-    
-    if mesa_ocupada: raise ValueError('La mesa ya esta ocupada en esta fecha')
-      
+    if not mesa_libre:
+        # ✅ Crear una nueva mesa
+        nuevo_numero = (session.query(Mesa).count() + 1)  # o lógica diferente
+        mesa_libre = Mesa(numero=nuevo_numero, fecha_creacion=horario.date())
+        session.add(mesa_libre)
+        session.flush()  # Necesario para obtener mesa_libre.id
+
+    # Crear el partido
     partido = Partido(
-        mesa=mesa,
+        horario=horario,
         es_bye=es_bye,
-        fase=fase,
-        categoria=categoria,
-        tipo=tipo,
+        mesa_id=mesa_libre.id,
+        categorias=categoria,
         jugador1=jugador1,
-        jugador2=jugador2,
-        fecha_creacion=fecha_creacion
+        jugador2=jugador2 if tipo == 'individual' else None,
+        equipo1=jugador1 if tipo == 'dobles' else None,
+        equipo2=jugador2 if tipo == 'dobles' else None,
     )
-    if tipo == 'individual':
-        partido.jugador1 = jugador1
-        partido.jugador2 = jugador2
-    else:
-        partido.equipo1 = jugador1
-        partido.equipo2 = jugador2
 
-    sesion.add(partido)
-    sesion.commit()
-    return partido 
+    session.add(partido)
+    session.commit()
+    session.refresh(partido)
+    return partido
 
-def obtener_partidos(sesion: Session):
-    return sesion.query(Partido).all()
+def obtener_partidos(session: Session):
+    return session.query(Partido).all()
 
-def obtener_partido(sesion: Session, id: int):
-    return sesion.query(Partido).filter(Partido.id == id).first()
+def obtener_partido(session: Session, id: int):
+    return session.query(Partido).filter(Partido.id == id).first()
 
-def actualizar_partido(sesion: Session, id: int, mesa: int, es_bye: bool, fase: int, categoria: int, tipo: str, jugador1: int, jugador2: int):
-    partido = sesion.query(Partido).filter(Partido.id == id).first()
+def actualizar_partido(session: Session, id: int, mesa: int, es_bye: bool, fase: int, categoria: int, tipo: str, jugador1: int, jugador2: int):
+    partido = session.query(Partido).filter(Partido.id == id).first()
     partido.mesa = mesa
     partido.es_bye = es_bye
     partido.fase = fase
@@ -54,11 +58,12 @@ def actualizar_partido(sesion: Session, id: int, mesa: int, es_bye: bool, fase: 
     partido.tipo = tipo
     partido.jugador1 = jugador1
     partido.jugador2 = jugador2
-    sesion.commit()
+    session.commit()
+    session.refresh(partido)
     return partido
 
-def eliminar_partido(sesion: Session, id: int):
-    partido = sesion.query(Partido).filter(Partido.id == id).first()
-    sesion.delete(partido)
-    sesion.commit()
+def eliminar_partido(session: Session, id: int):
+    partido = session.query(Partido).filter(Partido.id == id).first()
+    session.delete(partido)
+    session.commit()
     return partido

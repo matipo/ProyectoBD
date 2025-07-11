@@ -19,11 +19,12 @@ class Categoria(Base):
     __tablename__ = "categorias"
 
     id             = Column(Integer, primary_key=True)
+    nombre         = Column(Text, nullable=False)
     edad_min       = Column(Integer, nullable=False)
     edad_max       = Column(Integer, nullable=False)
     genero         = Column(Text,    nullable=False)
-    sets_x_partido = Column(Integer, nullable=False)
-    puntos_x_set   = Column(Integer, nullable=False)
+    sets_por_partido = Column(Integer, nullable=False)
+    puntos_por_sets   = Column(Integer, nullable=False)
 
     # Relaciones (opcionales, pero útiles)
     equipos       = relationship("Equipo", back_populates="categoria")
@@ -130,8 +131,11 @@ class Partido(Base):
 
     id            = Column(Integer, primary_key=True)
     horario       = Column(DateTime, nullable=False)
-    mesa_asignada = Column(Integer)
     es_bye        = Column(Boolean,  nullable=False)
+
+    mesa_id = Column(Integer, ForeignKey("mesas.id", ondelete="SET NULL"), unique=True)
+
+    mesa = relationship("Mesa", back_populates="partido", uselist=False)
 
     categorias = Column(Integer, ForeignKey("categorias.id",
                                             ondelete="CASCADE"),
@@ -157,8 +161,7 @@ class Partido(Base):
 
     resultados = relationship("ResultadoSet", back_populates="partido",
                               cascade="all, delete-orphan")
-    mesa       = relationship("Mesa", back_populates="partido",
-                              uselist=False)
+    
     fases      = relationship("Fase", back_populates="partido")
 
 Index("idx_partidos__categorias", Partido.categorias)
@@ -172,13 +175,17 @@ class Mesa(Base):
     __tablename__ = "mesas"
 
     id       = Column(Integer, primary_key=True)
-    partidos = Column(Integer, ForeignKey("partidos.id",ondelete="CASCADE"),nullable=False)
-    torneo = Column(Integer, ForeignKey("torneo.id",ondelete="CASCADE"),nullable=True)
+    numero= Column(Integer, nullable=False)
+    fecha_creacion= Column(Date)
+    
+    torneo_id = Column(Integer, ForeignKey("torneos.id",ondelete="CASCADE"),nullable=True)
 
-    partido = relationship("Partido", back_populates="mesa")
-    torneos = relationship("Torneo", back_populates="mesa")
 
-Index("idx_mesas__partidos", Mesa.partidos)
+    partido = relationship("Partido", back_populates="mesa", uselist=False, foreign_keys="[Partido.mesa_id]")
+    torneo  = relationship("Torneo")  
+
+
+Index("idx_mesa__torneo", Mesa.torneo_id)
 
 
 class ResultadoSet(Base):
@@ -206,18 +213,15 @@ class Torneo(Base):
     nombre            = Column(Text, nullable=False)
     fechas_inscripcion= Column(Date, nullable=False)
     fecha_competencia = Column(Date, nullable=False)
-    mesas_disponibles = Column(Integer, nullable=False)
-    #sacar dps
-    mesas             = Column(Integer, ForeignKey("mesas.id",ondelete="CASCADE"),nullable=True)
+    mesas_requeridas = Column(Integer, nullable=False)
 
-    mesa       = relationship("Mesa",    back_populates="torneos")
     fases      = relationship("Fase",    back_populates="torneo")
     categorias = relationship("CategoriaTorneo",
                               back_populates="torneo")
     inscripciones = relationship("Inscripcion",
                                  back_populates="torneo")
 
-Index("idx_torneos__mesas", Torneo.mesas)
+
 
 class CategoriaTorneo(Base):
     __tablename__ = "categorias_torneos"

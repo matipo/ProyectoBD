@@ -29,8 +29,7 @@ def create_torneo(
     nombre: str,
     fechas_inscripcion: date,
     fecha_competencia: date,
-    mesas_disponibles: int,
-    mesas: Optional[int]= None,
+    mesas_requeridas: int,
     session: Session = Depends(get_db),
 ):
     return crear_torneo(
@@ -38,8 +37,7 @@ def create_torneo(
         nombre,
         fechas_inscripcion,
         fecha_competencia,
-        mesas_disponibles,
-        mesas
+        mesas_requeridas,
     )
 
 @router.put("/{torneo_id}")
@@ -48,7 +46,7 @@ def update_torneo(
     nombre: str,
     fechas_inscripcion: date,
     fecha_competencia: date,
-    mesas_disponibles: int,
+    mesas_requeridas: int,
     session: Session = Depends(get_db),
 ):
     torneo = actualizar_torneo(
@@ -57,7 +55,7 @@ def update_torneo(
         nombre,
         fechas_inscripcion,
         fecha_competencia,
-        mesas_disponibles
+        mesas_requeridas
     )
     if not torneo:
         raise HTTPException(status_code=404, detail="Torneo no encontrado")

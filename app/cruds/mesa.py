@@ -3,13 +3,12 @@ from datetime import datetime
 from sqlalchemy.orm import Session
 from ..models import Mesa
 
-def crear_mesa(session, numero, capacidad, torneo, fecha_creacion: Optional[datetime] = None):
+def crear_mesa(session, numero,  torneo_id, fecha_creacion: Optional[datetime] = None):
     if fecha_creacion is None:
         fecha_creacion = datetime.now()
     mesa = Mesa(
-        numero=numero, 
-        capacidad=capacidad,
-        torneo=torneo, 
+        numero=numero,
+        torneo_id=torneo_id, 
         fecha_creacion=fecha_creacion
         )
 
@@ -24,10 +23,10 @@ def obtener_mesas(session):
 def obtener_mesas_torneo(session, torneo_id):
     return session.query(Mesa).filter(Mesa.torneo_id == torneo_id).all()
 
-def actualizar_mesa(session, id, numero, capacidad):
+def actualizar_mesa(session, id, numero,torneo_id):
     mesa = session.query(Mesa).filter(Mesa.id == id).first()
     mesa.numero = numero
-    mesa.capacidad = capacidad
+    mesa.torneo_id = torneo_id
     session.commit()
     return mesa
 
