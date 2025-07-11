@@ -2,10 +2,9 @@ from sqlalchemy.orm import Session
 from ..models import Inscripcion
 from typing import Optional
 
-def crear_inscripcion(session: Session, id: int, categoria_id: int, torneo_id: int,
+def crear_inscripcion(session: Session, categoria_id: int, torneo_id: int,
                       jugador_id: Optional[int] = None, equipo_id: Optional[int] = None):
     inscripcion = Inscripcion(
-        id=id,
         categorias=categoria_id,
         torneos=torneo_id,
         jugador=jugador_id,
