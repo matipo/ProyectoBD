@@ -6,19 +6,22 @@ from ..models import Asociacion
 def crear_asociacion(session: Session, nombre: str, ciudad: str, pais:str, fecha_inscripcion: Optional[datetime] = None):
     if fecha_inscripcion is None:
         fecha_inscripcion = datetime.now()
-        
+        # Asignaciones
         asociacion = Asociacion(nombre=nombre, ciudad=ciudad, pais=pais, fecha_inscripcion=fecha_inscripcion)
+        # Cosas de add, commit, refresh
         session.add(asociacion)
         session.commit()
         session.refresh(asociacion)
         return asociacion
 
+    # 18-23 - Gets
 def obtener_asociacion(session: Session, id: int):
     return session.query(Asociacion).filter(Asociacion.id == id).first()
 
 def obtener_asociaciones(session: Session):
     return session.query(Asociacion).all()
 
+    # 25-32 - Update
 def actualizar_asociacion(session: Session, id: int, nombre: str, ciudad: str,pais:str):
     asociacion = session.query(Asociacion).filter(Asociacion.id == id).first()
     asociacion.nombre = nombre

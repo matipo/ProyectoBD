@@ -4,17 +4,20 @@ from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 from ..models import Equipo, Categoria, Jugador
 
+# 8-40 - Creación de equipos
 def crear_equipo(Session: Session, nombre_equipo: str, jugadores: int, jugadores2: int, categoria: int):
     if jugadores == jugadores2:
         raise ValueError("Los jugadores deben ser diferentes")
 
     if not jugadores or not jugadores2:
         raise ValueError("Debe ingresar dos jugadores")
-
+    
+    # 16-18 - Obtiene categoria de las base de datos.
     categoria_obj = Session.query(Categoria).filter(Categoria.id == categoria).first()
     if not categoria_obj:
         raise ValueError("La categoria no existe")
 
+    # 21-24 - Obtiene jugadores de la base de datos.
     jugador1_obj = Session.query(Jugador).filter(Jugador.id == jugadores).first()
     jugador2_obj = Session.query(Jugador).filter(Jugador.id == jugadores2).first()
     if not jugador1_obj or not jugador2_obj:
@@ -24,16 +27,19 @@ def crear_equipo(Session: Session, nombre_equipo: str, jugadores: int, jugadores
         nombre_equipo=nombre_equipo,
         categoria=categoria_obj
     )
-
+    # 31-32 - Asigna en jugadores el objeto obtenido con anterioridad en 21-24
     equipo.jugadores = [jugador1_obj]
     equipo.jugadores2 = [jugador2_obj]
 
     
+
+
     Session.add(equipo)
     Session.commit()
     Session.refresh(equipo)
     return equipo
 
+# 43-59 - Diferentes gets
 def obtener_equipos(Session: Session):
     return Session.query(Equipo).all()
 
@@ -61,6 +67,7 @@ def actualizar_equipo(
     jugadores: Optional[int] = None,
     jugadores2: Optional[int] = None,
 ):
+    # 71-94 - Asigna y extrae objetos de la base de datos 
     equipo_obj = session.query(Equipo).filter(Equipo.id == equipo).first()
     if not equipo_obj:
         return None
@@ -85,11 +92,12 @@ def actualizar_equipo(
         if not jugador2_obj:
             raise ValueError("Jugador 2 no existe")
         equipo_obj.jugadores2 = [jugador2_obj]
-
+    # 96- 99 - Comitea los cambios.
     try:
         session.commit()
         session.refresh(equipo_obj)
         return equipo_obj
+    # 101-103 - Corre cuando hay un error.
     except IntegrityError:
         session.rollback()
         raise ValueError("No se pudo actualizar el equipo")

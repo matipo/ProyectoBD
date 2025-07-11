@@ -32,13 +32,16 @@ def create_torneo(
     mesas_requeridas: int,
     session: Session = Depends(get_db),
 ):
-    return crear_torneo(
-        session,
-        nombre,
-        fechas_inscripcion,
-        fecha_competencia,
-        mesas_requeridas,
-    )
+    try:
+        return crear_torneo(
+            session,
+            nombre,
+            fechas_inscripcion,
+            fecha_competencia,
+            mesas_requeridas,
+        )
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 @router.put("/{torneo_id}")
 def update_torneo(
@@ -49,6 +52,7 @@ def update_torneo(
     mesas_requeridas: int,
     session: Session = Depends(get_db),
 ):
+    
     torneo = actualizar_torneo(
         session,
         torneo_id,

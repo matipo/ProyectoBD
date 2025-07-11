@@ -12,6 +12,7 @@ from ..cruds.partido import (
 )
 
 router = APIRouter()
+# Gets
 @router.get("/")
 def get_partidos_endpoint(session: Session = Depends(get_db)):
     return obtener_partidos(session)
@@ -22,7 +23,7 @@ def get_partido_endpoint(partido_id: int, session: Session = Depends(get_db)):
     if not partido:
         raise HTTPException(status_code=404, detail="Partido no encontrado")
     return partido
-
+# Crea el endpoint de partido
 @router.post("/")
 def create_partido_endpoint(
     es_bye: bool,
@@ -34,6 +35,7 @@ def create_partido_endpoint(
     horario: Optional[datetime] = None,
     session: Session = Depends(get_db)
 ):
+    # Prueba si puede retornar los valores y si no ejecuta un mensaje de error.
     try:
         return crear_partido(
             session=session,

@@ -6,6 +6,8 @@ from ..models import Jugador
 def crear_jugador(session: Session, nombre: str,pais:str , telefono: str,genero: str, ciudad: str,fecha_nacimiento: datetime ,fecha_inscripcion: Optional[datetime] = None,asociaciones: Optional[int] = None):
     if fecha_inscripcion is None:
         fecha_inscripcion = datetime.now()
+
+    
     jugador = Jugador(
         nombre=nombre,
         pais=pais,

@@ -5,6 +5,10 @@ from ..models import Categoria
 
 def crear_categoria(session, nombre, genero, sets_por_partido, puntos_por_sets, edad_min, edad_max):
 
+    if genero not in ['masculino', 'femenino']:
+        raise ValueError('El genero debe ser "masculino" o "femenino"')
+    
+
     categoria = Categoria(
       nombre=nombre, 
       genero=genero,
